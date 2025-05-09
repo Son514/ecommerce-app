@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --host
+  backend:
+    build: ./backend/product-service
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app/product-service
+    environment:
+      - FLASK_ENV=development
+    command: python app.py
+    depends_on:
+      db:
+        condition: service_healthy # Wait for db to be healthy
+  db:
+    image: postgres:17.4
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ecommerce
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d ecommerce"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+volumes:
+  postgres_data:

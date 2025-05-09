@@ -1,0 +1,61 @@
+# General
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store
+
+# Terraform
+# Ignore Terraform state files and directories
+terraform.tfstate
+terraform.tfstate.*
+.tfstate
+.tfstate.backup
+*.tfstate.backup
+# Ignore Terraform crash logs
+crash.log
+# Ignore Terraform provider plugins
+.terraform/
+.terraform.lock.hcl
+
+# Ansible
+# Ignore Ansible retry files
+*.retry
+# Ignore Ansible vault passwords
+.vault_pass
+
+# Docker
+# Ignore Docker-related files (if any, since docker-compose.yml is present)
+docker-compose.override.yml
+*.docker
+
+# Backend and Frontend (assuming common frameworks)
+# Node.js (if applicable for backend or frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Python (if applicable for backend)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.pip
+
+# Build outputs (for frontend/backend)
+dist/
+build/
+out/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

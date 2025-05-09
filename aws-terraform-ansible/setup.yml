@@ -1,0 +1,134 @@
+- name: Configure EC2 instance with Jenkins, Docker, and MicroK8s on Ubuntu
+  hosts: jenkins_k8s
+  become: yes
+  tasks:
+    # Update all installed packages to the latest version
+    - name: Update all packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    # Install dependencies required for Jenkins repository setup
+    - name: Install dependencies for Jenkins
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+
+    # Install OpenJDK 21 for Jenkins
+    - name: Install Java for Jenkins
+      apt:
+        name:
+          - fontconfig
+          - openjdk-21-jre
+        state: present
+
+    # Verify Java installation
+    - name: Check installed Java version
+      command: java -version
+      register: java_output
+      changed_when: false
+
+    - name: Display Java version
+      debug:
+        msg: "{{ java_output.stdout_lines }}"
+
+    # Ensure /etc/apt/keyrings directory exists
+    - name: Create keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    # Add Jenkins LTS repository key
+    - name: Add Jenkins repository key
+      get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /etc/apt/keyrings/jenkins-keyring.asc
+        mode: '0644'
+      register: key_download
+      retries: 3
+      delay: 5
+      until: key_download is success
+
+    # Add Jenkins LTS repository
+    - name: Add Jenkins repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+        filename: jenkins
+        update_cache: yes
+
+    # Install Jenkins (LTS)
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes
+      retries: 3
+      delay: 5
+
+    # Start and enable Jenkins service
+    - name: Start and enable Jenkins
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    # Install Docker
+    - name: Uninstall conflicting packages
+      shell: |
+        for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+      ignore_errors: yes
+
+    - name: Install dependencies for Docker
+      apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+
+    - name: Add Docker's official GPG key
+      shell: |
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    - name: Add Docker repository
+      shell: |
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Verify Docker installation
+      command: sudo docker run hello-world
+      register: docker_output
+      changed_when: false
+
+    - name: Display Docker verification output
+      debug:
+        msg: "{{ docker_output.stdout_lines }}"
+
+    # Install MicroK8s
+    - name: Install MicroK8s
+      command: sudo snap install microk8s --classic
+
+    - name: Configure firewall rules for MicroK8s
+      shell: |
+        sudo ufw allow in on cni0 && sudo ufw allow out on cni0
+        sudo ufw default allow routed
+
+    - name: Enable MicroK8s addons
+      command: microk8s enable dns dashboard storage
+
