@@ -8,8 +8,8 @@ pipeline {
         }
         stage('Build Docker Images') {
             steps {
-                sh 'docker build -t frontend:latest ./frontend'
-                sh 'docker build -t product-service:latest ./backend/product-service'
+                sh 'sudo docker build -t frontend:latest ./frontend'
+                sh 'sudo docker build -t product-service:latest ./backend/product-service'
             }
         }
         // stage('Deploy to MicroK8s') {
