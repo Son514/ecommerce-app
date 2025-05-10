@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Simple E-Commerce App</h1>
+    <h1>Simple E-Commerce Apps</h1>
     <div v-if="products.length">
       <div v-for="product in products" :key="product.id" class="product">
         <h3>{{ product.name }}</h3>
