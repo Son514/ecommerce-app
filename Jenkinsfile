@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/your-username/ecommerce-app.git'
+                git branch: 'master', url: 'https://github.com/Son514/ecommerce-app.git'
             }
         }
         stage('Build Docker Images') {
