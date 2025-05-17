@@ -1,0 +1,11 @@
+# Terraform files to ignore
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfplan
+
+# Optional: Ignore logs or local environment settings
+*.log
+.env
