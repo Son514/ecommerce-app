@@ -59,16 +59,10 @@ resource "aws_security_group" "ecommerce_sg" {
     cidr_blocks = ["0.0.0.0/0"] # Allows SSH from any IP (restrict in production)
   }
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 30704
+    to_port     = 30704
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allows HTTP access
-  }
-  ingress {
-    from_port   = 31612
-    to_port     = 31612
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allows access to port 31612 from any IP (restrict in production)
+    cidr_blocks = ["0.0.0.0/0"] # Allows k8s dashboard access to port 30704 from any IP
   }
   egress {
     from_port   = 0

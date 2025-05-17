@@ -15,9 +15,10 @@ spec:
     spec:
       containers:
       - name: ecommerce-vue
-        image: localhost:32000/ecommerce-vue:latest
+        image: docker.io/markesplana/frontend  # Update image source
         ports:
         - containerPort: 5173
+        imagePullPolicy: Always  # Ensure the latest image is pulled
 ---
 apiVersion: v1
 kind: Service
@@ -31,5 +32,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 5173
-      nodePort: 30080
-  type: NodePort
+  type: NodePort  # No need to specify nodePort explicitly unless necessary
