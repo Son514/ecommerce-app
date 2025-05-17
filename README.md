@@ -32,10 +32,15 @@ Open http://localhost:5173.
 Project Structure
 
 src/App.vue: Main app component with navigation.
+
 src/views/Home.vue: Homepage with a "Shop Now" button.
+
 src/views/Products.vue: Product listing page with sample products.
+
 src/router/index.js: Vue Router configuration.
+
 Dockerfile: Docker configuration for containerization.
+
 
 Features
 
