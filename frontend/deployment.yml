@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-vue
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ecommerce-vue
+  template:
+    metadata:
+      labels:
+        app: ecommerce-vue
+    spec:
+      containers:
+      - name: ecommerce-vue
+        image: localhost:32000/ecommerce-vue:latest
+        ports:
+        - containerPort: 5173
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-vue-service
+  namespace: default
+spec:
+  selector:
+    app: ecommerce-vue
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5173
+      nodePort: 30080
+  type: NodePort
